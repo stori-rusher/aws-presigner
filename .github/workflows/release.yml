@@ -29,10 +29,10 @@ jobs:
         with:
           draft: false
           files: |
-            ./dist/darwin_amd64/presign
-            ./dist/darwin_arm64/presign
-            ./dist/linux_amd64/presign
-            ./dist/windows_amd64/presign.exe
+            ./dist/darwin_amd64.tar.gz
+            ./dist/darwin_arm64.tar.gz
+            ./dist/linux_amd64.tar.gz
+            ./dist/windows_amd64.zip
           generate_release_notes: true
           name: ${{ steps.version.outputs.version }}
           prerelease: false
