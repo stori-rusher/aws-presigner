@@ -46,23 +46,23 @@ func main() {
 		os.Exit(0)
 	}
 
+	if d < 1 || d > 604_800 {
+		log.Fatalln("duration must be between 1 and 604,800 seconds (7 days)")
+	}
+
 	awsCFG, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		log.Fatalf("unable to load S3 config, %v", err)
+		log.Fatalf("error loading S3 config: %v\n", err)
 	}
 
 	s3Client := s3.NewFromConfig(awsCFG)
 
 	loc, err := s3Client.GetBucketLocation(ctx, &s3.GetBucketLocationInput{Bucket: aws.String(b)})
 	if err != nil {
-		log.Fatalf("unable to get bucket location: %v\n", err)
+		log.Fatalf("error getting bucket location: %v\n", err)
 	}
 
 	p := NewS3Presigner(s3.NewPresignClient(s3Client), string(loc.LocationConstraint))
-
-	if d < 1 || d > 604_800 {
-		log.Fatalf("duration must be between 1 and 604,800 seconds (7 days)")
-	}
 
 	var obj *v4.PresignedHTTPRequest
 	switch strings.ToLower(m) {
@@ -71,11 +71,11 @@ func main() {
 	case "put":
 		obj, err = p.PutObject(ctx, b, k, time.Duration(d)*time.Second)
 	default:
-		log.Fatalf("invalid method: %v", m)
+		log.Fatalf("invalid method: %v\n", m)
 	}
 
 	if err != nil {
-		log.Fatalf("unable to presign request: %v\n", err)
+		log.Fatalf("error presigning URL: %v\n", err)
 	}
 
 	fmt.Println(obj.URL)
